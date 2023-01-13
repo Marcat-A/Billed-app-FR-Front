@@ -37,7 +37,10 @@ export default class Login {
     };
     this.localStorage.setItem("user", JSON.stringify(user));
     this.login(user)
-      .catch((err) => this.createUser(user))
+      .catch((err) =>
+        // Créer erreur ici
+        console.log(err)
+      )
       .then(() => {
         this.onNavigate(ROUTES_PATH["Bills"]);
         this.PREVIOUS_LOCATION = ROUTES_PATH["Bills"];
@@ -47,7 +50,6 @@ export default class Login {
   };
 
   handleSubmitAdmin = (e) => {
-    console.log("test");
     e.preventDefault();
     const user = {
       type: "Admin",
@@ -60,7 +62,10 @@ export default class Login {
     };
     this.localStorage.setItem("user", JSON.stringify(user));
     this.login(user)
-      .catch((err) => this.createUser(user))
+      .catch((err) =>
+        //Créer erreur ici
+        console.log(err)
+      )
       .then(() => {
         this.onNavigate(ROUTES_PATH["Dashboard"]);
         this.PREVIOUS_LOCATION = ROUTES_PATH["Dashboard"];
