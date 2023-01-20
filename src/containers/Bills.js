@@ -61,7 +61,6 @@ export default class {
           });
           console.log("length", bills.length);
           bills.sort((a, b) => new Date(b.date) - new Date(a.date));
-          console.log(bills);
           return bills;
         });
     }

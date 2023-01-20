@@ -5,10 +5,12 @@
 import { screen, waitFor } from "@testing-library/dom";
 import BillsUI from "../views/BillsUI.js";
 import { bills } from "../fixtures/bills.js";
-import { ROUTES_PATH } from "../constants/routes.js";
+import { ROUTES, ROUTES_PATH } from "../constants/routes.js";
 import { localStorageMock } from "../__mocks__/localStorage.js";
 import BillsContainer from "../containers/Bills.js";
 import userEvent from "@testing-library/user-event";
+import mockStore from "../__mocks__/store";
+import { getBills } from "../containers/Bills.js";
 
 import router from "../app/Router.js";
 
@@ -67,6 +69,42 @@ describe("Given I am connected as an employee", () => {
         expect(handleClickIconEye).toHaveBeenCalled();
       });
       expect(modaleFile.classList.contains("show")).toBeTruthy();
+    });
+    test("When I click on the button I should be redirected to the newBill page", async () => {
+      const onNavigate = (pathname) => {
+        document.body.innerHTML = ROUTES({ pathname });
+      };
+      const bills = new BillsContainer({
+        document,
+        onNavigate,
+        mockStore,
+        localStorage,
+      });
+      const handleClickNewBill = jest.fn((e) => bills.handleClickNewBill(e));
+      const addNewBill = screen.getByTestId("btn-new-bill");
+      addNewBill.addEventListener("click", handleClickNewBill);
+      userEvent.click(addNewBill);
+      expect(handleClickNewBill).toHaveBeenCalled();
+      expect(screen.queryByText("Envoyer une note de frais")).toBeTruthy();
+    });
+    test("Should make an error if datas can't be loaded", async () => {});
+    test("Should display data", async () => {
+      localStorage.setItem(
+        "user",
+        JSON.stringify({ type: "Employee", email: "employee@test.tld" })
+      );
+      await waitFor(() => {
+        bills = getBills();
+      });
+      // const bills = new BillsContainer({
+      //   document,
+      //   onNavigate,
+      //   mockStore,
+      //   localStorage: window.localStorage,
+      // });
+      document.body.innerHTML = BillsUI({ data: bills });
+      await waitFor(() => screen.getByText("Mes notes de frais"));
+      expect(screen.getByText("Mes notes de frais")).toBeTruthy();
     });
   });
 });
