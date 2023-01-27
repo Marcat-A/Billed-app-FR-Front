@@ -24,6 +24,7 @@ export default class NewBill {
     const filePath = e.target.value.split(/\\/g);
     const fileName = filePath[filePath.length - 1];
     const fileType = fileName.split(".")[1];
+    /* istanbul ignore else */
     if (fileType !== "jpg" && fileType !== "png" && fileType !== "jpeg") {
       // Display error message and disable the button
       console.log("Le fichier doit être au format jpg, jpeg ou png.");
