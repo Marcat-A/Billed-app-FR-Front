@@ -168,6 +168,7 @@ describe("Given I am a user connected as Employee", () => {
         document.body.innerHTML = ROUTES({ pathname });
       };
 
+      // Définir une propriété de la fenêtre pour simuler le stockage local
       Object.defineProperty(window, "localStorage", {
         value: localStorageMock,
       });
@@ -179,12 +180,14 @@ describe("Given I am a user connected as Employee", () => {
         })
       );
 
+      // Instancier la classe NewBill
       const newBill = new NewBill({
         document,
         onNavigate,
         store: mockStore,
         localStorage: window.localStorage,
       });
+      // Définir des données de facture d'exemple
       const sampleBill = {
         type: "Hôtel et logement",
         name: "encore",
@@ -199,6 +202,7 @@ describe("Given I am a user connected as Employee", () => {
         status: "pending",
       };
 
+      // Remplir les champs du formulaire avec les données d'exemple
       screen.getByTestId("expense-type").value = sampleBill.type;
       screen.getByTestId("expense-name").value = sampleBill.name;
       screen.getByTestId("datepicker").value = sampleBill.date;
@@ -209,35 +213,51 @@ describe("Given I am a user connected as Employee", () => {
 
       newBill.fileName = sampleBill.fileName;
       newBill.fileUrl = sampleBill.fileUrl;
+      // Mocker la méthode updateBill pour pouvoir tester handleSubmit
       newBill.updateBill = jest.fn();
+      // Mocker la fonction handleSubmit pour pouvoir tester l'envoi du formulaire
       const handleSubmit = jest.fn((e) => newBill.handleSubmit(e));
 
+      // Ajouter l'écouteur d'événement submit sur le formulaire
       const form = screen.getByTestId("form-new-bill");
       form.addEventListener("submit", handleSubmit);
       fireEvent.submit(form);
+      // Simuler l'envoi du formulaire
 
       expect(handleSubmit).toHaveBeenCalled();
+      // Vérifier que la fonction handleSubmit a bien été appelée
       expect(newBill.updateBill).toHaveBeenCalled();
+      // Vérifier que la méthode updateBill a bien été appelée
     });
     // test erreur API
     test("fetches error from an API and fails with 500 error", async () => {
+      // Utilise jest pour espionner sur la fonction "bills" de mockStore
       jest.spyOn(mockStore, "bills");
-      jest.spyOn(console, "error").mockImplementation(() => {}); // empêche console.error jest error
+      // Empêche l'erreur console.error de Jest
+      jest.spyOn(console, "error").mockImplementation(() => {});
+
+      // Définit la propriété "localStorage" de la fenêtre à localStorageMock
       Object.defineProperty(window, "localStorage", {
         value: localStorageMock,
       });
+      // Définit la propriété "location" de la fenêtre pour qu'elle ait la valeur de l'URL de NewBill
       Object.defineProperty(window, "location", {
         value: { hash: ROUTES_PATH["NewBill"] },
       });
 
+      // Ajoute un objet "user" au localStorage
       window.localStorage.setItem("user", JSON.stringify({ type: "Employee" }));
+      // Ajoute un élément "root" au document HTML
       document.body.innerHTML = `<div id="root"></div>`;
+      // Appelle la fonction router pour mettre à jour le contenu HTML
       router();
 
+      // Définit une fonction pour mettre à jour le contenu HTML lors de la navigation
       const onNavigate = (pathname) => {
         document.body.innerHTML = ROUTES({ pathname });
       };
 
+      // Utilise jest pour faire en sorte que la fonction "update" de mockStore.bills renvoie une erreur
       mockStore.bills.mockImplementationOnce(() => {
         return {
           update: () => {
@@ -245,6 +265,8 @@ describe("Given I am a user connected as Employee", () => {
           },
         };
       });
+
+      // Instancie la classe NewBill
       const newBill = new NewBill({
         document,
         onNavigate,
@@ -252,13 +274,18 @@ describe("Given I am a user connected as Employee", () => {
         localStorage: window.localStorage,
       });
 
-      // Submit form
+      // Soumet le formulaire
       const form = screen.getByTestId("form-new-bill");
+      // Utilise jest pour espionner sur la fonction handleSubmit
       const handleSubmit = jest.fn((e) => newBill.handleSubmit(e));
+      // Ajoute un écouteur d'événement de soumission au formulaire
       form.addEventListener("submit", handleSubmit);
+      // Soumet le formulaire en utilisant fireEvent
       fireEvent.submit(form);
+      // Attends la prochaine étape du processus
       await new Promise(process.nextTick);
-      expect(console.error).toBeCalled(); // s'attend à ce qu'une erreur soit appellée dans la console
+      // S'attend à ce qu'une erreur soit appelée dans la console
+      expect(console.error).toBeCalled();
     });
   });
 });
