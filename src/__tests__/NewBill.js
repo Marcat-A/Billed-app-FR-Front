@@ -148,8 +148,8 @@ describe("Given I am connected as an employee", () => {
 
         jest.spyOn(window, "alert").mockImplementation(() => {});
         // Crée un mock de la fonction d'alerte
-        expect(window.alert).not.toHaveBeenCalled();
-        // Vérifie que l'alerte n'a pas été appelée
+        expect(window.alert).toHaveBeenCalled();
+        // Vérifie que l'alerte a bien été appelée
         expect(file.value).toBe("");
         // Vérifie que le champ de fichier est vide
       });

@@ -27,7 +27,8 @@ export default class NewBill {
     /* istanbul ignore else */
     if (fileType !== "jpg" && fileType !== "png" && fileType !== "jpeg") {
       // Display error message and disable the button
-      console.log("Le fichier doit être au format jpg, jpeg ou png.");
+      alert("Le fichier doit être au format jpg, jpeg ou png.");
+      e.target.value = "";
       console.log(fileType);
     } else {
       const formData = new FormData();
